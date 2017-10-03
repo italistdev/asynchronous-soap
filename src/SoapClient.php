@@ -141,7 +141,6 @@ class SoapClientAsync extends SoapClient
             $shOpt = curl_share_init();
             curl_share_setopt($shOpt, CURLSHOPT_SHARE, CURL_LOCK_DATA_SSL_SESSION);
             curl_share_setopt($shOpt, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
-            curl_share_setopt($shOpt, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
             static::$sharedCurlData[$location] = $shOpt;
         }
 
@@ -163,6 +162,7 @@ class SoapClientAsync extends SoapClient
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SHARE, $sh);
+
 
         $soapRequests[$id] = $ch;
 
@@ -262,6 +262,7 @@ class SoapClientAsync extends SoapClient
         }
         /** Initialise curl multi handler and execute the requests  */
         $mh = curl_multi_init();
+
         foreach ($soapRequests as $ch) {
             curl_multi_add_handle($mh, $ch);
         }
@@ -269,18 +270,11 @@ class SoapClientAsync extends SoapClient
         $active = null;
         do {
             $mrc = curl_multi_exec($mh, $active);
-            if ($mrc > 0) {
-                //echo "ERREUR !\n " . curl_multi_strerror($mrc);
+            if ($mrc !== CURLM_CALL_MULTI_PERFORM) {
+                curl_multi_select($mh);
             }
         } while ($mrc === CURLM_CALL_MULTI_PERFORM || $active);
 
-        while ($active && $mrc == CURLM_OK) {
-            if (curl_multi_select($mh) != -1) {
-                do {
-                    $mrc = curl_multi_exec($mh, $active);
-                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
-            }
-        }
         /** assign the responses for all requests has been performed */
         foreach ($soapRequests as $id => $ch) {
             try {

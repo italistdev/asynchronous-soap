@@ -5,14 +5,14 @@
       "email": "mo.meabed@gmail.com"
     }
   ],
-  "name": "meabed/asynchronous-soap",
+  "name": "vinceferro/asynchronous-soap",
   "license": "GPLv3",
   "minimum-stability": "stable",
   "prefer-stable": true,
   "type": "library",
   "version": "1.0.3",
   "description": "Multi curl SoapClient that allow to perform multiple requests to SoapServer",
-  "homepage": "https://github.com/Meabed/asynchronous-soap",
+  "homepage": "https://github.com/vinceferro/asynchronous-soap",
   "keywords": [
     "Soap",
     "Curl",
